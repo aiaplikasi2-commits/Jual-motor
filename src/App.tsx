@@ -145,28 +145,6 @@ export default function App() {
     setViewMode('list');
   };
 
-  // Quick Seed Sample
-  const handleSeedSample = async () => {
-    const sampleAd: MotorAd = {
-      id: 'ad_sample_vario',
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      photos: [],
-      description: `🏍️ Honda Vario 125 CBS ISS Tahun 2021
-
-Kondisi mesin sangat halus & kering, tarikan enteng, body mulus terawat, kelistrikan normal semua.
-Surat-surat lengkap (BPKB, STNK, Faktur) dan pajak hidup panjang.
-
-💰 Harga: Rp17.500.000 (Nego Santai)
-📍 Lokasi: ${storeName} (Bisa cek unit langsung)
-
-Siap pakai untuk mobilitas harian tanpa kendala!`,
-    };
-    await saveAd(sampleAd);
-    await refreshAds();
-    showToast('Contoh iklan motor berhasil dimuat!');
-  };
-
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-orange-500 selection:text-white">
       {/* Offline Alert Strip */}
@@ -256,7 +234,7 @@ Siap pakai untuk mobilitas harian tanpa kendala!`,
                   ))}
                 </div>
               ) : (
-                <div className="py-16 px-4 text-center bg-slate-900/60 border border-dashed border-slate-800 rounded-3xl space-y-4">
+                <div className="py-16 px-4 text-center bg-slate-900/60 border border-dashed border-slate-800 rounded-3xl space-y-3">
                   <div className="text-5xl">🏍️</div>
                   <div>
                     <h3 className="text-base font-bold text-white">Belum Ada Iklan Motor</h3>
@@ -264,13 +242,6 @@ Siap pakai untuk mobilitas harian tanpa kendala!`,
                       Sentuh tombol <strong>+ Tambah Iklan</strong> di atas untuk membuat iklan baru dengan foto dan AI.
                     </p>
                   </div>
-                  <button
-                    onClick={handleSeedSample}
-                    className="inline-flex items-center gap-1.5 text-xs text-orange-400 hover:text-orange-300 font-bold bg-orange-500/10 hover:bg-orange-500/20 px-3 py-2 rounded-xl transition"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Muat Contoh Iklan</span>
-                  </button>
                 </div>
               )}
             </div>

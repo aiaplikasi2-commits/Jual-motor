@@ -58,6 +58,9 @@ export default defineConfig(() => {
         '@': path.resolve(import.meta.dirname, '.'),
       },
     },
+    define: {
+      'import.meta.env.VITE_GEMINI_API_KEY': JSON.stringify(process.env.GEMINI_API_KEY || ''),
+    },
     server: {
       // HMR is disabled in AI Studio preview environment to prevent WebSocket transport errors
       hmr: false,

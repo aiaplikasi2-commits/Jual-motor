@@ -15,6 +15,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onToast,
 }) => {
   const [storeName, setStoreName] = useState(currentStoreName);
+  const [apiKey, setApiKey] = useState(() => {
+    try {
+      return localStorage.getItem('jamhur_custom_gemini_key') || '';
+    } catch {
+      return '';
+    }
+  });
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +31,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       return;
     }
     onSave(trimmed);
-    onToast(`Nama toko diubah menjadi "${trimmed}"`);
+    try {
+      if (apiKey.trim()) {
+        localStorage.setItem('jamhur_custom_gemini_key', apiKey.trim());
+      } else {
+        localStorage.removeItem('jamhur_custom_gemini_key');
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+    onToast(`Pengaturan berhasil disimpan!`);
     onClose();
   };
 
@@ -34,7 +50,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-      <div className="w-full max-w-sm bg-slate-900 border border-slate-700 rounded-3xl p-5 shadow-2xl space-y-4">
+      <div className="w-full max-w-sm bg-slate-900 border border-slate-700 rounded-3xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-800 pb-3">
           <div className="flex items-center gap-2.5">
@@ -42,8 +58,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <Store className="w-5 h-5 text-orange-400" />
             </div>
             <div>
-              <h3 className="text-base font-black text-white">Ganti Nama Usaha</h3>
-              <p className="text-[11px] text-slate-400">Pengaturan nama merek atau showroom</p>
+              <h3 className="text-base font-black text-white">Pengaturan Usaha</h3>
+              <p className="text-[11px] text-slate-400">Nama showroom & konfigurasi AI</p>
             </div>
           </div>
           <button
@@ -73,7 +89,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2 pt-1">
+          <div className="space-y-1.5 pt-1 border-t border-slate-800">
+            <label className="text-xs font-bold text-slate-300 block">
+              Kunci API Gemini (Opsional):
+            </label>
+            <input
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="AIzaSy... (Opsional jika GitHub Pages)"
+              className="w-full bg-slate-950 border border-slate-700 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 rounded-xl px-3.5 py-2.5 text-xs text-white font-mono outline-none transition"
+            />
+            <p className="text-[10px] text-slate-400 leading-normal">
+              Isi jika Anda meng-host di <strong>GitHub Pages</strong> statis agar AI tetap bisa merapikan iklan langsung tanpa server backend.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 pt-2">
             <button
               type="button"
               onClick={handleReset}
@@ -89,7 +121,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               className="flex-1 py-3 px-4 rounded-xl bg-orange-600 hover:bg-orange-500 active:bg-orange-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition"
             >
               <Save className="w-4 h-4" />
-              <span>Simpan Nama</span>
+              <span>Simpan Pengaturan</span>
             </button>
           </div>
         </form>

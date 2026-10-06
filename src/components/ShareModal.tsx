@@ -7,8 +7,8 @@ import {
   X,
   MessageCircle,
   Check,
-  ExternalLink,
   Image as ImageIcon,
+  Users,
 } from 'lucide-react';
 import {
   shareAdContent,
@@ -32,9 +32,26 @@ export const ShareModal: React.FC<ShareModalProps> = ({ ad, onClose, onToast }) 
   // Extract first line
   const firstLine = ad.description.split('\n')[0] || 'Iklan Motor';
 
-  // 1. Share to WhatsApp with Photos & Caption
+  // 1. Android System Share (Bisa ke SEMUA: WA, Facebook, Grup FB, Telegram, dll.)
+  const handleSystemShare = async () => {
+    // Salin teks ke papan klip terlebih dahulu sebagai cadangan aman
+    await copyToClipboard(ad.description);
+
+    try {
+      const res = await shareAdContent(ad.description, photos);
+      if (res.success) {
+        onToast(res.sharedFiles ? 'Iklan & foto berhasil dibagikan!' : 'Teks iklan berhasil dibagikan!');
+        onClose();
+      } else if (!res.userCancelled && res.error) {
+        onToast(res.error);
+      }
+    } catch {
+      onToast('Gagal membagikan iklan.');
+    }
+  };
+
+  // 2. Share to WhatsApp with Photos & Caption
   const handleShareWhatsApp = async () => {
-    // Always copy text to clipboard first so user can paste if WA drops caption
     await copyToClipboard(ad.description);
 
     if (photos.length > 0 && typeof navigator !== 'undefined' && navigator.share) {
@@ -59,7 +76,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({ ad, onClose, onToast }) 
       }
     }
 
-    // Fallback if browser can't share files
     if (primaryPhoto) {
       await downloadPhoto(primaryPhoto, 'foto_motor_wa.jpg');
       onToast('Foto disimpan & teks disalin! Buka WhatsApp...');
@@ -69,36 +85,21 @@ export const ShareModal: React.FC<ShareModalProps> = ({ ad, onClose, onToast }) 
     onClose();
   };
 
-  // 2. Share to Facebook / Marketplace
+  // 3. Share to Facebook (Beranda / Grup - BUKAN Marketplace)
   const handleShareFacebook = async () => {
-    // Facebook requires photos from gallery and text pasted
     await copyToClipboard(ad.description);
 
     if (primaryPhoto) {
       await downloadPhoto(primaryPhoto, 'foto_motor_facebook.jpg');
     }
 
-    onToast('Foto disimpan di Galeri & teks disalin! Membuka Facebook...');
+    onToast('Foto disimpan di Galeri & teks disalin! Buka Facebook...');
 
     setTimeout(() => {
-      window.open('https://www.facebook.com/marketplace/create/item', '_blank');
+      // Buka Beranda Facebook untuk posting feed atau pilih grup
+      window.open('https://m.facebook.com/', '_blank');
       onClose();
-    }, 600);
-  };
-
-  // 3. Android System Share
-  const handleSystemShare = async () => {
-    try {
-      const res = await shareAdContent(ad.description, photos);
-      if (res.success) {
-        onToast(res.sharedFiles ? 'Iklan & foto berhasil dibagikan!' : 'Teks iklan berhasil dibagikan!');
-        onClose();
-      } else if (!res.userCancelled && res.error) {
-        onToast(res.error);
-      }
-    } catch {
-      onToast('Gagal membagikan iklan.');
-    }
+    }, 500);
   };
 
   // 4. Copy Text
@@ -143,12 +144,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({ ad, onClose, onToast }) 
             </div>
             <div>
               <h3 className="text-base font-black text-white">Bagikan Iklan</h3>
-              <p className="text-[11px] text-slate-400">Pilih tujuan berbagi</p>
+              <p className="text-[11px] text-slate-400">Bisa ke semua aplikasi, WA, FB & Grup</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -170,59 +171,67 @@ export const ShareModal: React.FC<ShareModalProps> = ({ ad, onClose, onToast }) 
           <div className="min-w-0 flex-1">
             <div className="text-xs font-bold text-white truncate">{firstLine}</div>
             <div className="text-[10px] text-orange-400 font-medium">
-              {photos.length} Foto Siap Dibagikan
+              {photos.length} Foto Tersedia
             </div>
           </div>
         </div>
 
         {/* Sharing Options */}
-        <div className="space-y-2">
-          {/* WhatsApp Button */}
+        <div className="space-y-2.5">
+          {/* 1. Android System Share (UTAMA - Ke Semua Aplikasi) */}
+          <button
+            type="button"
+            onClick={handleSystemShare}
+            className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 active:scale-[0.99] text-white font-black text-xs flex items-center justify-between shadow-lg shadow-orange-950/40 transition cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5">
+              <Share2 className="w-5 h-5 text-white" />
+              <div className="text-left">
+                <div className="leading-tight">Bagikan ke Semua Aplikasi</div>
+                <div className="text-[10px] font-normal text-orange-100">
+                  WA, FB, Grup, Telegram, dll. (Bawa Foto & Teks)
+                </div>
+              </div>
+            </div>
+            <span className="text-sm font-bold">➔</span>
+          </button>
+
+          {/* 2. WhatsApp Direct Button */}
           <button
             type="button"
             onClick={handleShareWhatsApp}
-            className="w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 active:scale-[0.99] text-white font-black text-xs flex items-center justify-between shadow-md transition"
+            className="w-full py-3 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 active:scale-[0.99] text-white font-bold text-xs flex items-center justify-between shadow-md transition cursor-pointer"
           >
             <div className="flex items-center gap-2.5">
               <MessageCircle className="w-5 h-5 text-emerald-200" />
               <div className="text-left">
                 <div className="leading-tight">Kirim ke WhatsApp</div>
                 <div className="text-[10px] font-normal text-emerald-100">
-                  Kirim foto langsung & caption otomatis
+                  Foto langsung + caption otomatis
                 </div>
               </div>
             </div>
             <span className="text-sm">➔</span>
           </button>
 
-          {/* Facebook Marketplace Button */}
+          {/* 3. Facebook Feed & Grup Button (BUKAN Marketplace) */}
           <button
             type="button"
             onClick={handleShareFacebook}
-            className="w-full py-3.5 px-4 rounded-2xl bg-sky-700 hover:bg-sky-600 active:bg-sky-800 active:scale-[0.99] text-white font-black text-xs flex items-center justify-between shadow-md transition"
+            className="w-full py-3 px-4 rounded-2xl bg-sky-700 hover:bg-sky-600 active:bg-sky-800 active:scale-[0.99] text-white font-bold text-xs flex items-center justify-between shadow-md transition cursor-pointer"
           >
             <div className="flex items-center gap-2.5">
               <div className="w-5 h-5 rounded-full bg-white text-sky-700 font-black text-xs flex items-center justify-center">
                 f
               </div>
               <div className="text-left">
-                <div className="leading-tight">Kirim ke Facebook / Marketplace</div>
+                <div className="leading-tight">Kirim ke Facebook (Beranda / Grup)</div>
                 <div className="text-[10px] font-normal text-sky-200">
-                  Simpan foto & buka form posting FB
+                  Simpan foto & posting ke Beranda / Grup FB
                 </div>
               </div>
             </div>
-            <ExternalLink className="w-4 h-4 text-sky-200" />
-          </button>
-
-          {/* Android System Share */}
-          <button
-            type="button"
-            onClick={handleSystemShare}
-            className="w-full py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-750 active:bg-slate-700 border border-slate-700 text-slate-100 font-bold text-xs flex items-center gap-2.5 transition"
-          >
-            <Share2 className="w-4 h-4 text-orange-400" />
-            <span>Bagikan ke Aplikasi Lain (Android Share)</span>
+            <Users className="w-4 h-4 text-sky-200" />
           </button>
 
           {/* Secondary Actions: Copy text & Download photos */}
@@ -230,7 +239,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ ad, onClose, onToast }) 
             <button
               type="button"
               onClick={handleCopyText}
-              className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 transition"
+              className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer"
             >
               {copied ? (
                 <>
@@ -249,7 +258,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ ad, onClose, onToast }) 
               type="button"
               disabled={downloading || photos.length === 0}
               onClick={handleDownloadAllPhotos}
-              className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 transition disabled:opacity-40"
+              className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 transition disabled:opacity-40 cursor-pointer"
             >
               <Download className="w-4 h-4 text-emerald-400" />
               <span>Simpan Foto</span>

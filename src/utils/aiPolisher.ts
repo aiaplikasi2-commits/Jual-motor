@@ -38,8 +38,17 @@ export async function polishMotorDescription(
     }
   }
 
-  // 2. Client-side fallback if user provided VITE_GEMINI_API_KEY (useful for static GitHub Pages)
-  const clientApiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
+  // 2. Client-side fallback if user provided API key or baked into VITE_GEMINI_API_KEY
+  let clientApiKey = '';
+  try {
+    clientApiKey = localStorage.getItem('jamhur_custom_gemini_key') || '';
+  } catch {
+    // ignore
+  }
+  if (!clientApiKey) {
+    clientApiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || '';
+  }
+
   if (clientApiKey) {
     try {
       const ai = new GoogleGenAI({ apiKey: clientApiKey });
