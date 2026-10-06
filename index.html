@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <script>
+      // Platform constraint: HMR is disabled in AI Studio preview iframe, ignore WebSocket transport errors
+      window.addEventListener('error', function (e) {
+        if (
+          (e.message && (
+            e.message.includes('WebSocket') ||
+            e.message.includes('createWebSocketModuleRunnerTransport')
+          )) ||
+          (e.filename && e.filename.includes('@vite/client'))
+        ) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      }, true);
+      window.addEventListener('unhandledrejection', function (e) {
+        var reason = e.reason ? (e.reason.message || String(e.reason)) : '';
+        if (
+          reason.includes('WebSocket') ||
+          reason.includes('createWebSocketModuleRunnerTransport') ||
+          reason.includes('@vite/client')
+        ) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      }, true);
+    </script>
+    <title>Jamhur Motor</title>
+    <meta name="description" content="Aplikasi PWA khusus Android untuk pembuatan dan pembagian iklan jual beli motor secara instan dan rapi." />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Jamhur Motor" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <meta property="og:title" content="Jamhur Motor" />
+    <meta property="og:description" content="Aplikasi PWA khusus Android untuk pembuatan dan pembagian iklan jual beli motor secara instan dan rapi." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body class="bg-slate-900 text-slate-100 antialiased selection:bg-orange-500 selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#ea580c" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg)" />
+  <circle cx="256" cy="256" r="210" fill="none" stroke="url(#accent)" stroke-width="12" opacity="0.4" />
+  
+  <!-- Motorcycle Icon -->
+  <g transform="translate(64, 100) scale(0.75)" fill="none" stroke="#f8fafc" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Back Wheel -->
+    <circle cx="100" cy="320" r="70" stroke="url(#accent)" stroke-width="26" fill="#0f172a" />
+    <circle cx="100" cy="320" r="24" fill="url(#accent)" stroke="none" />
+    
+    <!-- Front Wheel -->
+    <circle cx="412" cy="320" r="70" stroke="url(#accent)" stroke-width="26" fill="#0f172a" />
+    <circle cx="412" cy="320" r="24" fill="url(#accent)" stroke="none" />
+    
+    <!-- Frame & Body -->
+    <path d="M100 320 L190 240 L280 240 L340 160 L412 320" />
+    <path d="M190 240 L250 320 L360 320" />
+    <path d="M190 240 L160 170 L240 170" />
+    
+    <!-- Gas Tank & Seat -->
+    <path d="M160 170 Q240 160 270 190 Q300 220 330 190" fill="url(#accent)" stroke="none" />
+    <!-- Handlebar -->
+    <path d="M320 140 L360 170" stroke-width="22" stroke="#f97316" />
+    <circle cx="310" cy="130" r="10" fill="#f8fafc" />
+    
+    <!-- Exhaust -->
+    <path d="M220 310 L120 340" stroke="#94a3b8" stroke-width="16" />
+  </g>
+  
+  <text x="256" y="440" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="34" fill="#ffffff" text-anchor="middle" letter-spacing="4">JAMHUR MOTOR</text>
+</svg>
