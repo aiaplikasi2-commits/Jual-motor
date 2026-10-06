@@ -9,7 +9,6 @@ import {
   Upload,
   Smartphone,
   WifiOff,
-  Plus,
   Settings,
   Coffee,
 } from 'lucide-react';
@@ -39,7 +38,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { isInstallable, install } = usePWAInstall();
+  const { install } = usePWAInstall();
   const isOnline = useOnlineStatus();
 
   // Close menu on outside click
@@ -60,7 +59,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-4 py-2.5 shadow-md">
       <div className="max-w-md mx-auto flex items-center justify-between">
-        {/* Left: Branding & Bagi Kopi right beside store name */}
+        {/* Left: Branding & Back Button */}
         <div className="flex items-center gap-2">
           {viewMode !== 'list' && (
             <button
@@ -72,37 +71,18 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           )}
 
-          <div className="flex items-center gap-2">
-            <span
-              onClick={() => onNavigate('list')}
-              className="text-2xl cursor-pointer select-none"
-              role="img"
-              aria-label="motor"
-            >
+          <div
+            onClick={() => onNavigate('list')}
+            className="flex items-center gap-2 cursor-pointer select-none"
+          >
+            <span className="text-2xl" role="img" aria-label="motor">
               🏍️
             </span>
 
             <div className="leading-tight flex flex-col justify-center">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <h1
-                  onClick={() => onNavigate('list')}
-                  className="text-base font-black tracking-wider text-white uppercase truncate max-w-[170px] cursor-pointer"
-                >
-                  {storeName || 'JAMHUR MOTOR'}
-                </h1>
-
-                {/* Logo Kopi persis di samping nama usaha */}
-                <button
-                  type="button"
-                  onClick={onOpenBagiKopi}
-                  className="p-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 active:bg-amber-500/40 border border-amber-500/30 text-amber-400 transition cursor-pointer flex items-center justify-center shrink-0 shadow-xs"
-                  title="Bagi Kopi (DANA / GoPay: 08179015181)"
-                  aria-label="Bagi Kopi"
-                >
-                  <Coffee className="w-3.5 h-3.5 text-amber-400" />
-                </button>
-              </div>
-
+              <h1 className="text-base font-black tracking-wider text-white uppercase truncate max-w-[200px]">
+                {storeName || 'JAMHUR MOTOR'}
+              </h1>
               <p className="text-[10px] font-medium text-orange-400 tracking-wide mt-0.5">
                 IKLAN MOTOR ANDROID CEPAT
               </p>
@@ -110,8 +90,8 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Right side controls */}
-        <div className="flex items-center gap-1.5">
+        {/* Right side controls: Offline Indicator, Logo Kopi (Dipindahkan ke sini), dan Menu ⋮ */}
+        <div className="flex items-center gap-2">
           {!isOnline && (
             <span className="flex items-center gap-1 text-[11px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full font-medium">
               <WifiOff className="w-3 h-3 text-amber-400" />
@@ -119,21 +99,22 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           )}
 
-          {viewMode === 'list' && (
-            <button
-              onClick={() => onNavigate('create')}
-              className="flex items-center gap-1 bg-orange-600 hover:bg-orange-500 active:bg-orange-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm transition"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Iklan</span>
-            </button>
-          )}
+          {/* Logo Kopi menggantikan tombol iklan di atas */}
+          <button
+            type="button"
+            onClick={onOpenBagiKopi}
+            className="p-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 active:bg-amber-500/40 border border-amber-500/30 text-amber-400 transition cursor-pointer flex items-center justify-center shadow-xs"
+            title="Bagi Kopi (DANA / GoPay: 08179015181)"
+            aria-label="Bagi Kopi"
+          >
+            <Coffee className="w-4 h-4 text-amber-400" />
+          </button>
 
           {/* Menu ⋮ */}
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 active:bg-slate-700 transition"
+              className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 active:bg-slate-700 transition cursor-pointer"
               aria-label="Menu Opsi"
             >
               <MoreVertical className="w-5 h-5 text-slate-200" />
@@ -147,7 +128,7 @@ export const Header: React.FC<HeaderProps> = ({
                     setMenuOpen(false);
                     onOpenSettings();
                   }}
-                  className="w-full text-left px-4 py-2.5 hover:bg-slate-700/70 active:bg-slate-700 flex items-center gap-3 text-sm font-medium transition"
+                  className="w-full text-left px-4 py-2.5 hover:bg-slate-700/70 active:bg-slate-700 flex items-center gap-3 text-sm font-medium transition cursor-pointer"
                 >
                   <Settings className="w-4 h-4 text-orange-400" />
                   <div>
@@ -164,7 +145,7 @@ export const Header: React.FC<HeaderProps> = ({
                     setMenuOpen(false);
                     onOpenBackup();
                   }}
-                  className="w-full text-left px-4 py-2.5 hover:bg-slate-700/70 active:bg-slate-700 flex items-center gap-3 text-sm font-medium transition"
+                  className="w-full text-left px-4 py-2.5 hover:bg-slate-700/70 active:bg-slate-700 flex items-center gap-3 text-sm font-medium transition cursor-pointer"
                 >
                   <Download className="w-4 h-4 text-emerald-400" />
                   <div>
@@ -179,7 +160,7 @@ export const Header: React.FC<HeaderProps> = ({
                     setMenuOpen(false);
                     onOpenRestore();
                   }}
-                  className="w-full text-left px-4 py-2.5 hover:bg-slate-700/70 active:bg-slate-700 flex items-center gap-3 text-sm font-medium transition"
+                  className="w-full text-left px-4 py-2.5 hover:bg-slate-700/70 active:bg-slate-700 flex items-center gap-3 text-sm font-medium transition cursor-pointer"
                 >
                   <Upload className="w-4 h-4 text-sky-400" />
                   <div>
@@ -195,7 +176,7 @@ export const Header: React.FC<HeaderProps> = ({
                       setMenuOpen(false);
                       onOpenInstall();
                     }}
-                    className="w-full text-left px-4 py-2.5 hover:bg-orange-600/20 active:bg-orange-600/30 flex items-center gap-3 text-sm font-semibold text-orange-400 transition border-t border-slate-700/60 mt-1"
+                    className="w-full text-left px-4 py-2.5 hover:bg-orange-600/20 active:bg-orange-600/30 flex items-center gap-3 text-sm font-semibold text-orange-400 transition border-t border-slate-700/60 mt-1 cursor-pointer"
                   >
                     <Smartphone className="w-4 h-4 text-orange-400" />
                     <div>

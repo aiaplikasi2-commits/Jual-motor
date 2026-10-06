@@ -119,7 +119,31 @@ export async function restoreAds(
   jsonData: string,
   mode: 'replace' | 'merge' = 'merge'
 ): Promise<number> {
-  const parsed = JSON.parse(jsonData);
+  const cleanJson = (jsonData || '').trim().replace(/^\uFEFF/, '');
+  if (!cleanJson) {
+    throw new Error('File cadangan kosong.');
+  }
+
+  // Detect if user uploaded an HTML file (common when saving GitHub web page instead of raw JSON)
+  if (
+    cleanJson.startsWith('<') ||
+    cleanJson.toLowerCase().includes('<!doctype') ||
+    cleanJson.toLowerCase().includes('<html')
+  ) {
+    throw new Error(
+      'File yang dipilih adalah halaman web (HTML), bukan file JSON. Jika mengunduh dari GitHub, pastikan klik tombol "Raw" lalu simpan file .json asli.'
+    );
+  }
+
+  let parsed: any;
+  try {
+    parsed = JSON.parse(cleanJson);
+  } catch {
+    throw new Error(
+      'Format file bukan JSON yang valid. Pastikan memilih file cadangan .json yang benar.'
+    );
+  }
+
   const adsToImport: MotorAd[] = Array.isArray(parsed)
     ? parsed
     : Array.isArray(parsed.ads)
@@ -127,7 +151,7 @@ export async function restoreAds(
     : null;
 
   if (!adsToImport) {
-    throw new Error('Format file cadangan JSON tidak valid.');
+    throw new Error('Format file cadangan JSON tidak sesuai (tidak ditemukan daftar iklan motor).');
   }
 
   const db = await openDB();

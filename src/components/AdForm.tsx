@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { MotorAd } from '../types';
 import { compressImage } from '../utils/imageCompressor';
+import { polishMotorDescription } from '../utils/aiPolisher';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import {
   Camera,
@@ -130,19 +131,9 @@ export const AdForm: React.FC<AdFormProps> = ({
     setAiError(null);
 
     try {
-      const res = await fetch('/api/polish', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: description, storeName }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Gagal merapikan dengan AI.');
-      }
-
-      if (data.result) {
-        setDescription(data.result);
+      const result = await polishMotorDescription(description, storeName);
+      if (result) {
+        setDescription(result);
         onToast('✨ Keterangan berhasil dirapikan dengan AI!');
       }
     } catch (err: any) {

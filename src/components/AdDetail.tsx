@@ -19,6 +19,7 @@ import {
   copyToClipboard,
   downloadPhoto,
 } from '../utils/shareHelper';
+import { polishMotorDescription } from '../utils/aiPolisher';
 import { ShareModal } from './ShareModal';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 
@@ -105,18 +106,11 @@ export const AdDetail: React.FC<AdDetailProps> = ({
 
     setIsPolishing(true);
     try {
-      const res = await fetch('/api/polish', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: ad.description, storeName }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      if (data.result) {
+      const result = await polishMotorDescription(ad.description, storeName);
+      if (result) {
         const updated = {
           ...ad,
-          description: data.result,
+          description: result,
           updatedAt: Date.now(),
         };
         await onUpdate(updated);
